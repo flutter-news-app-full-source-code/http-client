@@ -6,7 +6,8 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:ht_http_client/src/interceptors/auth_interceptor.dart';
 import 'package:ht_http_client/src/interceptors/error_interceptor.dart';
-import 'package:ht_shared/ht_shared.dart'; // Updated import
+import 'package:ht_shared/ht_shared.dart';
+import 'package:logging/logging.dart';
 
 /// {@template ht_http_client}
 /// A robust HTTP client built on top of Dio, providing simplified API calls,
@@ -29,13 +30,16 @@ class HtHttpClient {
   ///   or testing
   /// - list of additional [interceptors] to be added alongside
   ///   the default Auth and Error interceptors.
+  /// - [logger]: Optional [Logger] instance for logging HTTP requests and responses.
   HtHttpClient({
     required String baseUrl,
     required TokenProvider tokenProvider,
     required bool isWeb,
     Dio? dioInstance,
     List<Interceptor>? interceptors,
-  }) : _dio = dioInstance ?? Dio() {
+    Logger? logger,
+  })  : _dio = dioInstance ?? Dio(),
+        _logger = logger ?? Logger('HtHttpClient') {
     // Configure base options
     _dio.options = BaseOptions(
       baseUrl: baseUrl,
@@ -68,6 +72,9 @@ class HtHttpClient {
   /// The configured Dio instance used for making requests.
   final Dio _dio;
 
+  /// The logger instance for this HTTP client.
+  final Logger _logger;
+
   /// Performs a GET request.
   ///
   /// - [path]: The endpoint path appended to the "baseUrl".
@@ -83,6 +90,9 @@ class HtHttpClient {
     Options? options,
     CancelToken? cancelToken,
   }) async {
+    _logger.info(
+      'GET request to: $path, Query Parameters: $queryParameters',
+    );
     try {
       final response = await _dio.get<T>(
         path,
@@ -90,16 +100,17 @@ class HtHttpClient {
         options: options,
         cancelToken: cancelToken,
       );
+      _logger.info('GET request to $path successful. Status: ${response.statusCode}');
       // Dio automatically throws for non-2xx, ErrorInterceptor maps it
       return response.data as T;
     } on DioException catch (e) {
-      // ErrorInterceptor should have mapped this, but catch ensures propagation
-      // If the error embedded in DioException is our custom one, rethrow it.
       if (e.error is HtHttpException) {
+        _logger.severe(
+          'GET request to $path failed with HtHttpException: ${e.error}',
+        );
         throw e.error!;
       }
-      // Otherwise, rethrow the original DioException
-      // (should ideally not happen)
+      _logger.severe('GET request to $path failed with DioException: $e');
       rethrow;
     }
   }
@@ -121,6 +132,9 @@ class HtHttpClient {
     Options? options,
     CancelToken? cancelToken,
   }) async {
+    _logger.info(
+      'POST request to: $path, Query Parameters: $queryParameters, Data: $data',
+    );
     try {
       final response = await _dio.post<T>(
         path,
@@ -129,9 +143,16 @@ class HtHttpClient {
         options: options,
         cancelToken: cancelToken,
       );
+      _logger.info('POST request to $path successful. Status: ${response.statusCode}');
       return response.data as T;
     } on DioException catch (e) {
-      if (e.error is HtHttpException) throw e.error!;
+      if (e.error is HtHttpException) {
+        _logger.severe(
+          'POST request to $path failed with HtHttpException: ${e.error}',
+        );
+        throw e.error!;
+      }
+      _logger.severe('POST request to $path failed with DioException: $e');
       rethrow;
     }
   }
@@ -153,6 +174,9 @@ class HtHttpClient {
     Options? options,
     CancelToken? cancelToken,
   }) async {
+    _logger.info(
+      'PUT request to: $path, Query Parameters: $queryParameters, Data: $data',
+    );
     try {
       final response = await _dio.put<T>(
         path,
@@ -161,9 +185,16 @@ class HtHttpClient {
         options: options,
         cancelToken: cancelToken,
       );
+      _logger.info('PUT request to $path successful. Status: ${response.statusCode}');
       return response.data as T;
     } on DioException catch (e) {
-      if (e.error is HtHttpException) throw e.error!;
+      if (e.error is HtHttpException) {
+        _logger.severe(
+          'PUT request to $path failed with HtHttpException: ${e.error}',
+        );
+        throw e.error!;
+      }
+      _logger.severe('PUT request to $path failed with DioException: $e');
       rethrow;
     }
   }
@@ -185,6 +216,9 @@ class HtHttpClient {
     Options? options,
     CancelToken? cancelToken,
   }) async {
+    _logger.info(
+      'DELETE request to: $path, Query Parameters: $queryParameters, Data: $data',
+    );
     try {
       final response = await _dio.delete<T>(
         path,
@@ -193,9 +227,16 @@ class HtHttpClient {
         options: options,
         cancelToken: cancelToken,
       );
+      _logger.info('DELETE request to $path successful. Status: ${response.statusCode}');
       return response.data as T;
     } on DioException catch (e) {
-      if (e.error is HtHttpException) throw e.error!;
+      if (e.error is HtHttpException) {
+        _logger.severe(
+          'DELETE request to $path failed with HtHttpException: ${e.error}',
+        );
+        throw e.error!;
+      }
+      _logger.severe('DELETE request to $path failed with DioException: $e');
       rethrow;
     }
   }
