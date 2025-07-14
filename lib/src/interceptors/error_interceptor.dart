@@ -89,13 +89,21 @@ class ErrorInterceptor extends Interceptor {
     if (responseData == null) return null;
 
     if (responseData is Map) {
-      // Common patterns: look for 'message', 'error', 'detail' keys
+      // New Pattern: Check for the nested {"error": {"message": "..."}}
+      // This is the standard format for ht_api.
+      if (responseData.containsKey('error') && responseData['error'] is Map) {
+        final errorMap = responseData['error'] as Map;
+        if (errorMap.containsKey('message') && errorMap['message'] is String) {
+          return errorMap['message'] as String;
+        }
+      }
+
+      // Fallback to common flat patterns: 'message', 'error', 'detail' keys.
       if (responseData.containsKey('message') &&
           responseData['message'] is String) {
         return responseData['message'] as String;
       }
-      if (responseData.containsKey('error') &&
-          responseData['error'] is String) {
+      if (responseData.containsKey('error') && responseData['error'] is String) {
         return responseData['error'] as String;
       }
       if (responseData.containsKey('detail') &&
