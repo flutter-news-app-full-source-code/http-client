@@ -1,9 +1,8 @@
 //
 // ignore_for_file: only_throw_errors
 
-import 'package:dio/browser.dart';
 import 'package:dio/dio.dart';
-import 'package:dio/io.dart';
+import 'package:ht_http_client/src/adapters/http_adapter.dart';
 import 'package:ht_http_client/src/interceptors/auth_interceptor.dart';
 import 'package:ht_http_client/src/interceptors/error_interceptor.dart';
 import 'package:ht_shared/ht_shared.dart';
@@ -34,7 +33,6 @@ class HtHttpClient {
   HtHttpClient({
     required String baseUrl,
     required TokenProvider tokenProvider,
-    required bool isWeb,
     Dio? dioInstance,
     List<Interceptor>? interceptors,
     Logger? logger,
@@ -49,11 +47,7 @@ class HtHttpClient {
     );
 
     // Set the appropriate HttpClientAdapter
-    if (isWeb) {
-      _dio.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
-    } else {
-      _dio.httpClientAdapter = IOHttpClientAdapter();
-    }
+    _dio.httpClientAdapter = createAdapter();
 
     // Add default interceptors
     _dio.interceptors.addAll([
