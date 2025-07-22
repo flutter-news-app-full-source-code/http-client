@@ -30,7 +30,7 @@ void main() {
     late TokenProvider tokenProvider;
     late MockHttpClientAdapter mockHttpClientAdapter;
 
-    const String baseUrl = 'http://test.com/api';
+    const baseUrl = 'http://test.com/api';
 
     setUp(() {
       mockDio = MockDio();

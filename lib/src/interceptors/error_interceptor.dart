@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:core/core.dart';
+import 'package:dio/dio.dart';
 
 /// Dio interceptor that catches [DioException]s and maps them to specific
 /// [HttpException] subtypes for clearer error handling downstream.
