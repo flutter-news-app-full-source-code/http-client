@@ -1,14 +1,14 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:ht_shared/ht_shared.dart';
+import 'package:core/core.dart';
 
 /// Dio interceptor that catches [DioException]s and maps them to specific
-/// [HtHttpException] subtypes for clearer error handling downstream.
+/// [HttpException] subtypes for clearer error handling downstream.
 class ErrorInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    final HtHttpException mappedException;
+    final HttpException mappedException;
 
     switch (err.type) {
       case DioExceptionType.connectionTimeout:
@@ -90,7 +90,6 @@ class ErrorInterceptor extends Interceptor {
 
     if (responseData is Map) {
       // New Pattern: Check for the nested {"error": {"message": "..."}}
-      // This is the standard format for ht_api.
       if (responseData.containsKey('error') && responseData['error'] is Map) {
         final errorMap = responseData['error'] as Map;
         if (errorMap.containsKey('message') && errorMap['message'] is String) {
@@ -103,7 +102,8 @@ class ErrorInterceptor extends Interceptor {
           responseData['message'] is String) {
         return responseData['message'] as String;
       }
-      if (responseData.containsKey('error') && responseData['error'] is String) {
+      if (responseData.containsKey('error') &&
+          responseData['error'] is String) {
         return responseData['error'] as String;
       }
       if (responseData.containsKey('detail') &&

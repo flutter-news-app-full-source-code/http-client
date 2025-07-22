@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:ht_http_client/src/interceptors/auth_interceptor.dart';
+import 'package:http_client/src/interceptors/auth_interceptor.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 

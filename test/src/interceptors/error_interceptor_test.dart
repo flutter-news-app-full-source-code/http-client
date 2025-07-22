@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:core/core.dart'; // Updated import
 import 'package:dio/dio.dart';
-import 'package:ht_http_client/src/interceptors/error_interceptor.dart';
-import 'package:ht_shared/ht_shared.dart'; // Updated import
+import 'package:http_client/src/interceptors/error_interceptor.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
@@ -42,7 +42,7 @@ void main() {
     });
 
     // Helper function to verify the rejection
-    void verifyRejection<T extends HtHttpException>({
+    void verifyRejection<T extends HttpException>({
       required DioException originalDioErr,
       String? expectedMessage, // Optional: for specific message checks
     }) {
@@ -54,13 +54,13 @@ void main() {
 
       expect(captured.error, isA<T>());
       expect(captured.error, isNotNull);
-      // Removed check for dioException as it's no longer part of HtHttpException
+      // Removed check for dioException as it's no longer part of HttpException
       expect(captured.requestOptions, originalDioErr.requestOptions);
       expect(captured.response, originalDioErr.response);
       expect(captured.type, originalDioErr.type);
       // Check message if provided
       if (expectedMessage != null) {
-        expect((captured.error! as HtHttpException).message, expectedMessage);
+        expect((captured.error! as HttpException).message, expectedMessage);
       }
     }
 

@@ -3,6 +3,6 @@
 library;
 
 // Export the main client class
-export 'src/ht_http_client.dart';
+export 'src/http_client.dart';
 // Export the TokenProvider typedef for convenience
 export 'src/interceptors/auth_interceptor.dart' show TokenProvider;

@@ -1,25 +1,25 @@
 //
 // ignore_for_file: only_throw_errors
 
+import 'package:core/core.dart';
 import 'package:dio/dio.dart';
-import 'package:ht_http_client/src/adapters/http_adapter.dart';
-import 'package:ht_http_client/src/interceptors/auth_interceptor.dart';
-import 'package:ht_http_client/src/interceptors/error_interceptor.dart';
-import 'package:ht_shared/ht_shared.dart';
+import 'package:http_client/src/adapters/http_adapter.dart';
+import 'package:http_client/src/interceptors/auth_interceptor.dart';
+import 'package:http_client/src/interceptors/error_interceptor.dart';
 import 'package:logging/logging.dart';
 
-/// {@template ht_http_client}
+/// {@template http_client}
 /// A robust HTTP client built on top of Dio, providing simplified API calls,
 /// automatic authentication header injection, and custom exception mapping.
 ///
 /// This client handles common HTTP methods (GET, POST, PUT, DELETE) and maps
-/// Dio errors and non-2xx status codes to specific [HtHttpException] subtypes
+/// Dio errors and non-2xx status codes to specific [HttpException] subtypes
 /// defined in `exceptions.dart`.
 /// {@endtemplate}
-class HtHttpClient {
-  /// {@macro ht_http_client}
+class HttpClient {
+  /// {@macro http_client}
   ///
-  /// Creates an instance of [HtHttpClient].
+  /// Creates an instance of [HttpClient].
   ///
   /// Requires a "baseUrl" for the API endpoint and a [tokenProvider] function
   /// to asynchronously retrieve the authentication token.
@@ -30,14 +30,14 @@ class HtHttpClient {
   /// - list of additional [interceptors] to be added alongside
   ///   the default Auth and Error interceptors.
   /// - [logger]: Optional [Logger] instance for logging HTTP requests and responses.
-  HtHttpClient({
+  HttpClient({
     required String baseUrl,
     required TokenProvider tokenProvider,
     Dio? dioInstance,
     List<Interceptor>? interceptors,
     Logger? logger,
-  })  : _dio = dioInstance ?? Dio(),
-        _logger = logger ?? Logger('HtHttpClient') {
+  }) : _dio = dioInstance ?? Dio(),
+       _logger = logger ?? Logger('HttpClient') {
     // Configure base options
     _dio.options = BaseOptions(
       baseUrl: baseUrl,
@@ -77,16 +77,14 @@ class HtHttpClient {
   /// - [cancelToken]: Optional [CancelToken] for request cancellation.
   ///
   /// Returns the response data decoded as type [T].
-  /// Throws an [HtHttpException] on network errors or non-2xx status codes.
+  /// Throws an [HttpException] on network errors or non-2xx status codes.
   Future<T> get<T>(
     String path, {
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
   }) async {
-    _logger.info(
-      'GET request to: $path, Query Parameters: $queryParameters',
-    );
+    _logger.info('GET request to: $path, Query Parameters: $queryParameters');
     try {
       final response = await _dio.get<T>(
         path,
@@ -94,13 +92,15 @@ class HtHttpClient {
         options: options,
         cancelToken: cancelToken,
       );
-      _logger.info('GET request to $path successful. Status: ${response.statusCode}');
+      _logger.info(
+        'GET request to $path successful. Status: ${response.statusCode}',
+      );
       // Dio automatically throws for non-2xx, ErrorInterceptor maps it
       return response.data as T;
     } on DioException catch (e) {
-      if (e.error is HtHttpException) {
+      if (e.error is HttpException) {
         _logger.severe(
-          'GET request to $path failed with HtHttpException: ${e.error}',
+          'GET request to $path failed with HttpException: ${e.error}',
         );
         throw e.error!;
       }
@@ -118,7 +118,7 @@ class HtHttpClient {
   /// - [cancelToken]: Optional [CancelToken] for request cancellation.
   ///
   /// Returns the response data decoded as type [T].
-  /// Throws an [HtHttpException] on network errors or non-2xx status codes.
+  /// Throws an [HttpException] on network errors or non-2xx status codes.
   Future<T> post<T>(
     String path, {
     dynamic data,
@@ -137,12 +137,14 @@ class HtHttpClient {
         options: options,
         cancelToken: cancelToken,
       );
-      _logger.info('POST request to $path successful. Status: ${response.statusCode}');
+      _logger.info(
+        'POST request to $path successful. Status: ${response.statusCode}',
+      );
       return response.data as T;
     } on DioException catch (e) {
-      if (e.error is HtHttpException) {
+      if (e.error is HttpException) {
         _logger.severe(
-          'POST request to $path failed with HtHttpException: ${e.error}',
+          'POST request to $path failed with HttpException: ${e.error}',
         );
         throw e.error!;
       }
@@ -160,7 +162,7 @@ class HtHttpClient {
   /// - [cancelToken]: Optional [CancelToken] for request cancellation.
   ///
   /// Returns the response data decoded as type [T].
-  /// Throws an [HtHttpException] on network errors or non-2xx status codes.
+  /// Throws an [HttpException] on network errors or non-2xx status codes.
   Future<T> put<T>(
     String path, {
     dynamic data,
@@ -179,12 +181,14 @@ class HtHttpClient {
         options: options,
         cancelToken: cancelToken,
       );
-      _logger.info('PUT request to $path successful. Status: ${response.statusCode}');
+      _logger.info(
+        'PUT request to $path successful. Status: ${response.statusCode}',
+      );
       return response.data as T;
     } on DioException catch (e) {
-      if (e.error is HtHttpException) {
+      if (e.error is HttpException) {
         _logger.severe(
-          'PUT request to $path failed with HtHttpException: ${e.error}',
+          'PUT request to $path failed with HttpException: ${e.error}',
         );
         throw e.error!;
       }
@@ -202,7 +206,7 @@ class HtHttpClient {
   /// - [cancelToken]: Optional [CancelToken] for request cancellation.
   ///
   /// Returns the response data decoded as type [T].
-  /// Throws an [HtHttpException] on network errors or non-2xx status codes.
+  /// Throws an [HttpException] on network errors or non-2xx status codes.
   Future<T> delete<T>(
     String path, {
     dynamic data,
@@ -221,12 +225,14 @@ class HtHttpClient {
         options: options,
         cancelToken: cancelToken,
       );
-      _logger.info('DELETE request to $path successful. Status: ${response.statusCode}');
+      _logger.info(
+        'DELETE request to $path successful. Status: ${response.statusCode}',
+      );
       return response.data as T;
     } on DioException catch (e) {
-      if (e.error is HtHttpException) {
+      if (e.error is HttpException) {
         _logger.severe(
-          'DELETE request to $path failed with HtHttpException: ${e.error}',
+          'DELETE request to $path failed with HttpException: ${e.error}',
         );
         throw e.error!;
       }
