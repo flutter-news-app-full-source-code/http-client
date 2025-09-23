@@ -10,6 +10,7 @@ dependencies:
   core:
     git:
       url: https://github.com/flutter-news-app-full-source-code/core.git
+      ref: 01cdfac43da99df1bfb7e5ed902c9f52fa55f911
   dio: ^5.8.0+1
   logging: ^1.3.0
       
