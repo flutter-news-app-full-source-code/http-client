@@ -2,6 +2,9 @@
 /// automatic authentication header injection, and custom exception mapping.
 library;
 
+// Export Dio types
+export 'package:dio/dio.dart' show InterceptorsWrapper, Options;
+
 // Export the main client class
 export 'src/http_client.dart';
 // Export the TokenProvider typedef for convenience
