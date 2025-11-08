@@ -1,7 +1,7 @@
 name: http_client
 description: Robust and reusable Dart HTTP client built on top of the `dio` package. It simplifies API interactions by providing common HTTP methods, automatic authentication header injection, and mapping network/status code errors to specific custom exceptions.
 repository: https://github.com/flutter-news-app-full-source-code/http_client
-version: 1.0.1
+version: 1.1.0
 publish_to: none
 
 environment:
