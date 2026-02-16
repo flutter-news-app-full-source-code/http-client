@@ -4,7 +4,14 @@ library;
 
 // Export Dio types
 export 'package:dio/dio.dart'
-    show CancelToken, DioException, Interceptor, InterceptorsWrapper, Options;
+    show
+        CancelToken,
+        DioException,
+        FormData,
+        Interceptor,
+        InterceptorsWrapper,
+        MultipartFile,
+        Options;
 
 // Export the main client class
 export 'src/http_client.dart';
